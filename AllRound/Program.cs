@@ -1,11 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
 
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+
+using AllRound.Resources.Datatypes;
+using AllRound.Resources.Settings;
 
 namespace AllRound
 {
@@ -19,9 +25,24 @@ namespace AllRound
 
         private async Task MainAsync()
         {
+            string JSON = "";
+            string SettingsLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location).Replace(@"bin\Debug\netcoreapp2.0", @"Data\Settings.json");
+            using (var Stream = new FileStream(SettingsLocation, FileMode.Open, FileAccess.Read))
+            using (var ReadSettings = new StreamReader(Stream))
+            {
+                JSON = ReadSettings.ReadToEnd();
+            }
+
+            Setting Settings = JsonConvert.DeserializeObject<Setting>(JSON);
+            ESettings.Banned = Settings.banned;
+            ESettings.Log = Settings.log;
+            ESettings.Owner = Settings.owner;
+            ESettings.Token = Settings.token;
+            ESettings.Version = Settings.version;
+
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Debug
+                LogLevel = LogSeverity.Info
             });
 
             //help help HELP heLp
@@ -37,15 +58,8 @@ namespace AllRound
 
             Client.Ready += Client_Ready;
             Client.Log += Client_Log;
-
-            string Token = "";
-            using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.0", @"Data\Token.txt"), FileMode.Open, FileAccess.Read))
-            using (var ReadToken = new StreamReader(Stream))
-            {
-                Token = ReadToken.ReadToEnd();
-            }
-
-            await Client.LoginAsync(TokenType.Bot, Token);
+            
+            await Client.LoginAsync(TokenType.Bot, ESettings.Token);
             await Client.StartAsync();
 
             await Task.Delay(-1);
@@ -54,6 +68,12 @@ namespace AllRound
         private async Task Client_Log(LogMessage Message)
         {
             Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
+            try
+            {
+                SocketGuild Guild = Client.Guilds.Where(x => x.Id == ESettings.Log[0]).FirstOrDefault();
+                SocketTextChannel Channel = Guild.Channels.Where(x => x.Id == ESettings.Log[1]).FirstOrDefault() as SocketTextChannel;
+                await Channel.SendMessageAsync($"{DateTime.Now} at {Message.Source}] {Message.Message}");
+            } catch { }
         }
 
         private async Task Client_Ready()

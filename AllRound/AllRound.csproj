@@ -7,13 +7,14 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\Data\" />
-    <Folder Include="Resources\Database\" />
     <Folder Include="Resources\Extensions\" />
-    <Folder Include="Resources\Datatypes\" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 using Discord;
 using Discord.Commands;
+using System.Reflection;
+using System.IO;
 
 namespace AllRound.Core.Commands
 {
@@ -13,7 +15,7 @@ namespace AllRound.Core.Commands
         [Command("hello"), Alias("helloworld", "world"), Summary("Hello world command")]
         public async Task Sjustein()
         {
-            await Context.Channel.SendMessageAsync("Hello world");
+            await Context.Channel.SendMessageAsync("Hello worldtestset");
         }
 
         [Command("embed"), Summary("Embed test command")]
